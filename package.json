@@ -1,0 +1,25 @@
+{
+  "name": "prostogram-server",
+  "version": "1.0.0",
+  "description": "The backend of the Mesto project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint" : "npx eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omarcompany/prostogram-server.git"
+  },
+  "author": "omarcompany",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/omarcompany/prostogram-server/issues"
+  },
+  "homepage": "https://github.com/omarcompany/prostogram-server#readme",
+  "dependencies": {
+    "eslint": "^8.23.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0"
+  }
+}
