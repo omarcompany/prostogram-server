@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true, 
+    required: true,
     minLength: 2,
     maxLengthL: 30,
   },
@@ -24,8 +24,8 @@ const cardSchema = new mongoose.Schema({
     },
   ],
   createdAt: {
-    type: Number,
-    default: Date.now().getTime(),
+    type: Date,
+    default: new Date(),
   },
 });
 
