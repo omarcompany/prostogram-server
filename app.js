@@ -3,17 +3,13 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
 const users = require("./routes/users");
-const cards = require('./routes/cards')
+const cards = require("./routes/cards");
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
 const URI = "mongodb://localhost:27017/prostogramdb";
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use("/users", users);
 
 /* We don't have relations between card and user, so add temporary hack */
 app.use((req, res, next) => {
@@ -23,7 +19,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/cards', cards)
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/users", users);
+
+app.use("/cards", cards);
 
 mongoose.connect(URI, (error) => {
   if (error) throw error.message;
