@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 
 const users = require("./routes/users");
 const cards = require("./routes/cards");
+const HTTP_RESPONSE = require("./constants/errors");
 
 const { PORT = 3000 } = process.env;
 
@@ -24,6 +25,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/users", users);
 
 app.use("/cards", cards);
+
+app.use((err, req, res, next) => {
+  const { statusCode = HTTP_RESPONSE.internalError, message } = err;
+
+  res.status(err.statusCode).send({
+    message:
+      statusCode === HTTP_RESPONSE.internalError
+        ? HTTP_RESPONSE.internalError.message
+        : message,
+  });
+  next();
+});
 
 mongoose.connect(URI, (error) => {
   if (error) throw error.message;
