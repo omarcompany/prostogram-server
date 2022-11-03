@@ -12,6 +12,8 @@ const HTTP_RESPONSE = {
     },
   },
   internalError: { status: 500, message: "Server error" },
+  unauthorized: { status: 401, message: "You need authorization" },
+  forbidden: { status: 403, message: "Access is denied" },
 };
 
 const ERROR_TYPE = {

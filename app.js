@@ -5,27 +5,26 @@ const bodyParser = require("body-parser");
 const users = require("./routes/users");
 const cards = require("./routes/cards");
 const HTTP_RESPONSE = require("./constants/errors");
+const auth = require("./middlewares/auth");
+const authRouter = require("./routes/auth");
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
-const URI = "mongodb://localhost:27017/prostogramdb";
+mongoose.connect("mongodb://localhost:27017/prostogramdb", (error) => {
+  if (error) throw error.message;
 
-/* We don't have relations between card and user, so add temporary hack */
-app.use((req, res, next) => {
-  req.user = {
-    _id: "6356a2c46f54bfcbe8073b29",
-  };
-  next();
+  console.log(`Connected to prostogram server`);
 });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use("/", authRouter);
+app.use(auth);
 app.use("/users", users);
-
 app.use("/cards", cards);
-
 app.use((err, req, res, next) => {
   const { statusCode = HTTP_RESPONSE.internalError, message } = err;
 
@@ -36,12 +35,6 @@ app.use((err, req, res, next) => {
         : message,
   });
   next();
-});
-
-mongoose.connect(URI, (error) => {
-  if (error) throw error.message;
-
-  console.log(`Connected to ${URI}`);
 });
 
 app.listen(PORT, () => {
