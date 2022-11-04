@@ -28,29 +28,31 @@ module.exports.getCards = (req, res, next) =>
     .catch(next);
 
 module.exports.remove = (req, res, next) => {
-  Card.findById((user) => {
-    if (!card) {
-      throw new NotFoundError(HTTP_RESPONSE.notFound.absentedMessage.card);
-    }
-    if (!card.owner.equals(req.user._id)) {
-      throw new ForbiddenError();
-    }
+  Card.findById(req.params.id)
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError(HTTP_RESPONSE.notFound.absentedMessage.card);
+      }
+      if (!card.owner.equals(req.user._id)) {
+        throw new ForbiddenError();
+      }
 
-    Card.findByIdAndRemove(req.params.id)
-      .then((card) => {
-        if (!card) {
-          throw new ForbiddenError();
-        }
-        res.send(card);
-      })
-      .catch((err) => {
-        if (err.name === ERROR_TYPE.cast) {
-          next(new BadRequestError());
-          return;
-        }
-        next(err);
-      });
-  }).catch(next);
+      Card.findByIdAndRemove(req.params.id)
+        .then((card) => {
+          if (!card) {
+            throw new ForbiddenError();
+          }
+          res.send(card);
+        })
+        .catch((err) => {
+          if (err.name === ERROR_TYPE.cast) {
+            next(new BadRequestError());
+            return;
+          }
+          next(err);
+        });
+    })
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {

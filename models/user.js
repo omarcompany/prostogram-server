@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const { isEmail } = require("validator");
+
+const { HTTP_RESPONSE } = require("../constants/errors");
+const NotFoundError = require("../errors/not-found-error");
 
 const userSchema = new mongoose.Schema({
   name: {

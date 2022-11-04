@@ -6,6 +6,7 @@ const BadRequestError = require("../errors/bad-request-error");
 const { ERROR_TYPE, HTTP_RESPONSE } = require("../constants/errors");
 const NotFoundError = require("../errors/not-found-error");
 const User = require("../models/user");
+const UnauthorizedError = require("../errors/unauthorized-error.js");
 
 module.exports.createUser = (req, res, next) => {
   const { name, avatar, about, email, password } = req.body;
@@ -17,7 +18,15 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     })
-      .then((user) => res.send(user))
+      .then((user) =>
+        res.send({
+          _id: user._id,
+          name: user.name,
+          avatar: user.avatar,
+          about: user.about,
+          email: user.email,
+        })
+      )
       .catch((err) => {
         if (err.name === ERROR_TYPE.validity || err.name === ERROR_TYPE.cast) {
           next(new BadRequestError());
@@ -40,7 +49,12 @@ module.exports.getUserById = (req, res, next) => {
       if (!user) {
         throw new NotFoundError(HTTP_RESPONSE.notFound.absentedMessage.user);
       }
-      res.send(user);
+      res.send({
+        _id: user._id,
+        name: user.name,
+        avatar: user.avatar,
+        about: user.about,
+      });
     })
     .catch((err) => {
       if (err.name === ERROR_TYPE.cast) {
@@ -61,7 +75,12 @@ module.exports.updateUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError(HTTP_RESPONSE.notFound.absentedMessage.user);
       }
-      res.send(user);
+      res.send({
+        _id: user._id,
+        name: user.name,
+        avatar: user.avatar,
+        about: user.about,
+      });
     })
     .catch((err) => {
       if (err.name === ERROR_TYPE.validity || err.name === ERROR_TYPE.cast) {
@@ -82,7 +101,12 @@ module.exports.updateAvatar = (req, res, next) => {
       if (!user) {
         throw new NotFoundError(HTTP_RESPONSE.notFound.absentedMessage.user);
       }
-      res.send(user);
+      res.send({
+        _id: user._id,
+        name: user.name,
+        avatar: user.avatar,
+        about: user.about,
+      });
     })
     .catch((err) => {
       if (err.name === ERROR_TYPE.validity || err.name === ERROR_TYPE.cast) {
@@ -97,19 +121,18 @@ module.exports.updateAvatar = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  User.findUserByCredentials({ email, password })
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, SECRET_KEY, {
         expiresIn: 3600,
       });
       res.send({ token });
     })
-    .catch(next);
+    .catch(() => next(new UnauthorizedError()));
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
   const { _id } = req.user;
-
   User.findById(_id)
     .then((user) => {
       res.send(user);
