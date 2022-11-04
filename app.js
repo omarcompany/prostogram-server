@@ -7,9 +7,9 @@ const config = require("config");
 const user = require("./routes/user");
 const users = require("./routes/users");
 const cards = require("./routes/cards");
-const HTTP_RESPONSE = require("./constants/errors");
 const auth = require("./middlewares/auth");
 const authRouter = require("./routes/auth");
+const commonError = require("./middlewares/common-error");
 
 const { PORT = 3000 } = process.env;
 
@@ -32,17 +32,7 @@ app.use(auth);
 app.use("/user", user);
 app.use("/users", users);
 app.use("/cards", cards);
-app.use((err, req, res, next) => {
-  const { statusCode = HTTP_RESPONSE.internalError, message } = err;
-
-  res.status(err.statusCode).send({
-    message:
-      statusCode === HTTP_RESPONSE.internalError
-        ? HTTP_RESPONSE.internalError.message
-        : message,
-  });
-  next();
-});
+app.use(commonError);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
