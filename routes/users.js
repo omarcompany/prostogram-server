@@ -1,8 +1,17 @@
 const router = require("express").Router();
-const { createUser, getUserById, getUsers } = require("../controllers/users");
+const { celebrate, Joi } = require("celebrate");
 
-router.post("/", createUser);
+const { getUserById, getUsers } = require("../controllers/users");
+
 router.get("/", getUsers);
-router.get("/:id", getUserById);
+router.get(
+  "/:id",
+  celebrate({
+    params: Joi.object().keys({
+      id: Joi.string().hex().length(24).required(),
+    }),
+  }),
+  getUserById
+);
 
 module.exports = router;
