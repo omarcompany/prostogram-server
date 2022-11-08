@@ -11,10 +11,15 @@ chai.use(chaiHttp);
 
 const userEmail = "anothertestmail@gmail.com";
 const userPassword = "1234567890";
+const userAbout = "I am an engeneer";
+const userAvatar =
+  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fakspic.ru%2Falbum%2Fbest_wallpapers&psig=AOvVaw1KP_9mGiRtqbOXSU4JEw0c&ust=1667986706386000&source=images&cd=vfe&ved=0CA0QjRxqFwoTCKDA3L-knvsCFQAAAAAdAAAAABAE";
 let token = "";
 let userId = "";
 const anotherName = "Vasya";
-const anotherAvatar = "another-avatar-link";
+const anotherAvatar =
+  "https://img1.akspic.ru/previews/9/2/2/9/6/169229/169229-fioletovyj_esteticheskoj-estetika-purpur-tsvetnoy-temno_fioletovyj-500x.jpg";
+const anotherAbout = "I am a writer";
 
 describe("User", () => {
   before((done) => {
@@ -25,7 +30,7 @@ describe("User", () => {
     it("it should POST a user", (done) => {
       const user = {
         name: "Fedya",
-        avatar: "no avatar",
+        avatar: userAvatar,
         about: `I am an engeneer`,
         email: userEmail,
         password: userPassword,
@@ -112,7 +117,7 @@ describe("User", () => {
 
   describe("PATCH /user/me", () => {
     it("should change user name", (done) => {
-      const user = { name: anotherName };
+      const user = { name: anotherName, about: anotherAbout };
       chai
         .request(server)
         .patch("/user/me")
@@ -122,6 +127,7 @@ describe("User", () => {
           res.should.have.status(200);
           res.body.should.be.a("object");
           res.body.should.have.property("name");
+          res.body.should.have.property("about");
           done();
         });
     });
@@ -137,7 +143,9 @@ describe("User", () => {
           res.should.have.status(200);
           res.body.should.be.a("object");
           res.body.should.have.property("name");
-          res.body.name.should.be.eql(anotherName)
+          res.body.name.should.be.eql(anotherName);
+          res.body.should.have.property("about");
+          res.body.about.should.be.eql(anotherAbout);
           done();
         });
     });
@@ -170,7 +178,7 @@ describe("User", () => {
           res.should.have.status(200);
           res.body.should.be.a("object");
           res.body.should.have.property("avatar");
-          res.body.avatar.should.be.eql(anotherAvatar)
+          res.body.avatar.should.be.eql(anotherAvatar);
           done();
         });
     });

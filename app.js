@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const config = require("config");
+const { errors } = require('celebrate');
 
 const user = require("./routes/user");
 const users = require("./routes/users");
@@ -32,6 +33,7 @@ app.use(auth);
 app.use("/user", user);
 app.use("/users", users);
 app.use("/cards", cards);
+app.use(errors());
 app.use(commonError);
 
 app.listen(PORT, () => {

@@ -14,9 +14,12 @@ chai.use(chaiHttp);
 
 const userEmail = "anothertestmail@gmail.com";
 const userPassword = "1234567890";
+const userAvatar =
+  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fakspic.ru%2Falbum%2Fbest_wallpapers&psig=AOvVaw1KP_9mGiRtqbOXSU4JEw0c&ust=1667986706386000&source=images&cd=vfe&ved=0CA0QjRxqFwoTCKDA3L-knvsCFQAAAAAdAAAAABAE";
 let token = "";
 let cardName = "Some card";
-let cardLink = "some-link";
+let cardLink =
+  "https://cakeshop.com.ua/images/m8S25qCov4Y/h:5000/watermark:0.8:ce:0:0:1/bG9jYWw/6Ly8vY2FrZXNob3AuY29tLnVhL3B1YmxpY19odG1sL3N0b3JhZ2UvYXBwL3B1YmxpYy9pbWcvcHJvZHVjdC85NDc0XzEuanBn";
 let cardId = "";
 
 describe("Card", () => {
@@ -31,7 +34,7 @@ describe("Card", () => {
   before((done) => {
     const user = {
       name: "Fedya",
-      avatar: "no avatar",
+      avatar: userAvatar,
       about: `I am an engeneer`,
       email: userEmail,
       password: userPassword,
