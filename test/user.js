@@ -31,7 +31,7 @@ describe("User", () => {
       const user = {
         name: "Fedya",
         avatar: userAvatar,
-        about: `I am an engeneer`,
+        about: userAbout,
         email: userEmail,
         password: userPassword,
       };

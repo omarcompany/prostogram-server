@@ -11,6 +11,7 @@ const cards = require("./routes/cards");
 const auth = require("./middlewares/auth");
 const authRouter = require("./routes/auth");
 const commonError = require("./middlewares/common-error");
+const { cors } = require('./middlewares/cors');
 
 const { PORT = 3000 } = process.env;
 
@@ -19,16 +20,18 @@ const app = express();
 mongoose.connect(config.DBHost, (error) => {
   if (error) throw error.message;
 
-  console.log(`Connected to prostogram server`);
+  console.log(`Connected to prostogram server ${config.DBHost}`);
 });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors);
 
 app.use("/", authRouter);
 if (config.util.getEnv("NODE_ENV") !== "test") {
   app.use(morgan("combined"));
 }
+
 app.use(auth);
 app.use("/user", user);
 app.use("/users", users);
