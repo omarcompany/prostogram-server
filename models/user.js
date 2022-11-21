@@ -10,18 +10,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     minLength: 2,
     maxLengthL: 30,
-    default: "John Doe",
+    default: "Oxxxymiron",
   },
   avatar: {
     type: String,
     default:
-      "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
+      "https://s3.zona.media/entry/daca4e3bbe4ef179153a1a17cebe5376_1400x850",
   },
   about: {
     type: String,
     minLength: 2,
     maxLengthL: 30,
-    default: "Inventor",
+    default: "I am a musician",
   },
   password: {
     type: String,
