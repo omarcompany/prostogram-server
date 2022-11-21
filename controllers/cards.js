@@ -1,7 +1,7 @@
-const NotFoundError = require("../errors/not-found-error");
-const ForbiddenError = require("../errors/forbidden-error");
 const Card = require("../models/card");
 const { ERROR_TYPE, HTTP_RESPONSE } = require("../constants/errors");
+const ForbiddenError = require("../errors/forbidden-error");
+const NotFoundError = require("../errors/not-found-error");
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -24,7 +24,9 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.getCards = (req, res, next) =>
   Card.find({})
-    .then((cards) => res.send(cards))
+    .then((cards) => {
+      res.send(cards)
+    })
     .catch(next);
 
 module.exports.remove = (req, res, next) => {
