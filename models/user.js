@@ -39,6 +39,7 @@ const userSchema = new mongoose.Schema({
       message: "Invalid email",
     },
   },
+  roles: [{ type: String, ref: "role" }],
 });
 
 userSchema.statics.findUserByCredentials = function (email, password) {

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const config = require("config");
-const { errors } = require('celebrate');
+const { errors } = require("celebrate");
 
 const user = require("./routes/user");
 const users = require("./routes/users");
@@ -11,7 +11,8 @@ const cards = require("./routes/cards");
 const auth = require("./middlewares/auth");
 const authRouter = require("./routes/auth");
 const commonError = require("./middlewares/common-error");
-const { cors } = require('./middlewares/cors');
+const { cors } = require("./middlewares/cors");
+const { rolesInstance } = require("./controllers/roles");
 
 const { PORT = 3000 } = process.env;
 
@@ -42,5 +43,7 @@ app.use(commonError);
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
+
+rolesInstance();
 
 module.exports = app;
