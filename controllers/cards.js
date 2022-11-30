@@ -25,7 +25,7 @@ module.exports.createCard = (req, res, next) => {
 module.exports.getCards = (req, res, next) =>
   Card.find({})
     .then((cards) => {
-      res.send(cards)
+      res.send(cards);
     })
     .catch(next);
 
@@ -35,7 +35,9 @@ module.exports.remove = (req, res, next) => {
       if (!card) {
         throw new NotFoundError(HTTP_RESPONSE.notFound.absentedMessage.card);
       }
-      if (!card.owner.equals(req.user._id)) {
+      const roles = req.user.roles;
+      const isAdmin = roles.includes("ADMIN");
+      if (!isAdmin && !card.owner.equals(req.user._id)) {
         throw new ForbiddenError();
       }
 

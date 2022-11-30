@@ -5,36 +5,57 @@ const { SECRET_KEY } = require("../constants/constants.js");
 const BadRequestError = require("../errors/bad-request-error");
 const { ERROR_TYPE, HTTP_RESPONSE } = require("../constants/errors");
 const NotFoundError = require("../errors/not-found-error");
+const Role = require("../models/role");
 const User = require("../models/user");
 const UnauthorizedError = require("../errors/unauthorized-error.js");
 
+const generateAccessToken = (_id, roles) => {
+  const payload = { _id, roles };
+  return jwt.sign(payload, SECRET_KEY, {
+    expiresIn: 3600,
+  });
+};
+
 module.exports.createUser = (req, res, next) => {
   const { name, avatar, about, email, password } = req.body;
-  bcrypt.hash(password, 10).then((hash) => {
-    User.create({
-      name,
-      avatar,
-      about,
-      email,
-      password: hash,
-    })
-      .then((user) =>
-        res.send({
-          _id: user._id,
-          name: user.name,
-          avatar: user.avatar,
-          about: user.about,
-          email: user.email,
-        })
-      )
-      .catch((err) => {
-        if (err.name === ERROR_TYPE.validity || err.name === ERROR_TYPE.cast) {
-          next(new BadRequestError());
-          return;
-        }
-        next(err);
+
+  const isAdmin = email === "admin@mail.com";
+
+  Role.find({}).then((items) => {
+    const [user, admin] = items;
+
+    const roles = isAdmin ? [user.value, admin.value] : [user.value];
+
+    bcrypt.hash(password, 10).then((hash) => {
+      User.create({
+        name,
+        avatar,
+        about,
+        email,
+        password: hash,
+        roles,
       })
-      .catch(next);
+        .then((user) =>
+          res.send({
+            _id: user._id,
+            name: user.name,
+            avatar: user.avatar,
+            about: user.about,
+            email: user.email,
+          })
+        )
+        .catch((err) => {
+          if (
+            err.name === ERROR_TYPE.validity ||
+            err.name === ERROR_TYPE.cast
+          ) {
+            next(new BadRequestError());
+            return;
+          }
+          next(err);
+        })
+        .catch(next);
+    });
   });
 };
 
@@ -132,9 +153,7 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, SECRET_KEY, {
-        expiresIn: 3600,
-      });
+      const token = generateAccessToken(user._id, user.roles);
       res.send({ token });
     })
     .catch(() => next(new UnauthorizedError()));
