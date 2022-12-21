@@ -172,6 +172,10 @@ module.exports.getCurrentUser = (req, res, next) => {
   const { _id } = req.user;
   User.findById(_id)
     .then((user) => {
+      if (!user) {
+        next(new NotFoundError(HTTP_RESPONSE.notFound.absentedMessage.user));
+        return;
+      }
       res.send(user);
     })
     .catch(next);
