@@ -2,8 +2,9 @@ process.env.NODE_ENV = "test";
 
 require("./user");
 
-const User = require("../models/user");
 const Card = require("../models/card");
+const User = require("../models/user");
+const { TOKEN_TYPE } = require("../constants/constants");
 
 const chai = require("chai");
 const chaiHttp = require("chai-http");
@@ -14,8 +15,6 @@ chai.use(chaiHttp);
 
 const userEmail = "anothertestmail@gmail.com";
 const userPassword = "1234567890";
-const userAvatar =
-  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fakspic.ru%2Falbum%2Fbest_wallpapers&psig=AOvVaw1KP_9mGiRtqbOXSU4JEw0c&ust=1667986706386000&source=images&cd=vfe&ved=0CA0QjRxqFwoTCKDA3L-knvsCFQAAAAAdAAAAABAE";
 let token = "";
 let cardName = "Some card";
 let cardLink =
@@ -34,7 +33,6 @@ describe("Card", () => {
   before((done) => {
     const user = {
       name: "Fedya",
-      avatar: userAvatar,
       about: `I am an engeneer`,
       email: userEmail,
       password: userPassword,
@@ -74,7 +72,7 @@ describe("Card", () => {
       chai
         .request(server)
         .post("/cards")
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${token}`)
         .send(card)
         .end((err, res) => {
           res.should.have.status(200);
@@ -94,7 +92,7 @@ describe("Card", () => {
       chai
         .request(server)
         .get("/cards")
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a("array");
@@ -123,7 +121,7 @@ describe("Card", () => {
       chai
         .request(server)
         .put(`/cards/${cardId}/likes`)
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a("object");
@@ -137,7 +135,7 @@ describe("Card", () => {
       chai
         .request(server)
         .get("/cards")
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a("array");
@@ -157,7 +155,7 @@ describe("Card", () => {
       chai
         .request(server)
         .delete(`/cards/${cardId}/likes`)
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a("object");
@@ -171,7 +169,7 @@ describe("Card", () => {
       chai
         .request(server)
         .get("/cards")
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a("array");
@@ -191,7 +189,7 @@ describe("Card", () => {
       chai
         .request(server)
         .delete(`/cards/${cardId}`)
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${token}`)
         .end((err, res) => {
           res.should.have.status(200);
           done();
@@ -204,7 +202,7 @@ describe("Card", () => {
       chai
         .request(server)
         .get("/cards")
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a("array");

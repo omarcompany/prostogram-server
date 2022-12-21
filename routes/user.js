@@ -19,14 +19,6 @@ router.patch(
   }),
   updateUser
 );
-router.patch(
-  "/me/avatar",
-  celebrate({
-    body: Joi.object().keys({
-      avatar: Joi.string().uri().regex(URL_REG_EXP).required(),
-    }),
-  }),
-  updateAvatar
-);
+router.patch("/me/avatar", updateAvatar);
 
 module.exports = router;

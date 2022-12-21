@@ -1,11 +1,14 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const path = require("path");
+const Uuid = require("uuid");
 
-const { SECRET_KEY } = require("../constants/constants.js");
 const BadRequestError = require("../errors/bad-request-error");
 const { ERROR_TYPE, HTTP_RESPONSE } = require("../constants/errors");
 const NotFoundError = require("../errors/not-found-error");
 const Role = require("../models/role");
+const { SECRET_KEY } = require("../constants/constants.js");
+const { STATIC_PATH } = require("../settings");
 const User = require("../models/user");
 const UnauthorizedError = require("../errors/unauthorized-error.js");
 
@@ -119,7 +122,13 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 module.exports.updateAvatar = (req, res, next) => {
-  const { avatar } = req.body;
+  const file = req.files.file;
+
+  const mimeType = file.name.split(".").pop();
+  const avatar = `${Uuid.v4()}.${mimeType}`;
+  const filePath = path.join(STATIC_PATH, avatar);
+  file.mv(filePath);
+
   User.findByIdAndUpdate(
     req.user._id,
     {
