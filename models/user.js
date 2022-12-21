@@ -14,8 +14,7 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    default:
-      "https://s3.zona.media/entry/daca4e3bbe4ef179153a1a17cebe5376_1400x850",
+    default: "",
   },
   about: {
     type: String,

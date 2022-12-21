@@ -1,28 +1,41 @@
 process.env.NODE_ENV = "test";
 
+const { STATIC_PATH } = require("../settings");
+const { TOKEN_TYPE } = require("../constants/constants");
 const User = require("../models/user");
 
 const chai = require("chai");
 const chaiHttp = require("chai-http");
+const fs = require("fs");
+const md5 = require("md5");
+const path = require("path");
 const server = require("../app");
 const should = chai.should();
 
 chai.use(chaiHttp);
 
-const userEmail = "anothertestmail@gmail.com";
-const userPassword = "1234567890";
-const userAbout = "I am an engeneer";
-const userAvatar =
-  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fakspic.ru%2Falbum%2Fbest_wallpapers&psig=AOvVaw1KP_9mGiRtqbOXSU4JEw0c&ust=1667986706386000&source=images&cd=vfe&ved=0CA0QjRxqFwoTCKDA3L-knvsCFQAAAAAdAAAAABAE";
-let token = "";
-let userId = "";
-const anotherName = "Vasya";
-const anotherAvatar =
-  "https://img1.akspic.ru/previews/9/2/2/9/6/169229/169229-fioletovyj_esteticheskoj-estetika-purpur-tsvetnoy-temno_fioletovyj-500x.jpg";
-const anotherAbout = "I am a writer";
+const testUser = {
+  email: "anothertestmail@gmail.com",
+  password: "1234567890",
+  about: "I am an engeneer",
+  id: "",
+  token: "",
+  avatar: "",
+};
+
+const testAvatar = {
+  name: "test-avatar.jpg",
+  path: path.join(__dirname, "src", "test-avatar.jpg"),
+  hashSum: "",
+};
 
 describe("User", () => {
   before((done) => {
+    if (fs.existsSync(STATIC_PATH)) {
+      fs.rmSync(STATIC_PATH, { recursive: true, force: true });
+    }
+    fs.mkdirSync(STATIC_PATH);
+
     User.deleteMany({}, (error) => done());
   });
 
@@ -30,10 +43,9 @@ describe("User", () => {
     it("it should POST a user", (done) => {
       const user = {
         name: "Fedya",
-        avatar: userAvatar,
-        about: userAbout,
-        email: userEmail,
-        password: userPassword,
+        about: testUser.about,
+        email: testUser.email,
+        password: testUser.password,
       };
       chai
         .request(server)
@@ -56,8 +68,8 @@ describe("User", () => {
   describe("POST /signin", () => {
     it("sign in", (done) => {
       const user = {
-        email: userEmail,
-        password: userPassword,
+        email: testUser.email,
+        password: testUser.password,
       };
       chai
         .request(server)
@@ -68,7 +80,7 @@ describe("User", () => {
           res.body.should.be.a("object");
           res.body.should.have.property("token");
           res.body.should.not.have.property("password");
-          token = res.body.token;
+          testUser.token = res.body.token;
           done();
         });
     });
@@ -79,7 +91,7 @@ describe("User", () => {
       chai
         .request(server)
         .get("/user/me/")
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${testUser.token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a("object");
@@ -89,7 +101,7 @@ describe("User", () => {
           res.body.should.have.property("about");
           res.body.should.have.property("email");
           res.body.should.not.have.property("password");
-          userId = res.body._id;
+          testUser.id = res.body._id;
           done();
         });
     });
@@ -99,8 +111,8 @@ describe("User", () => {
     it("should get user by id", (done) => {
       chai
         .request(server)
-        .get("/users/" + userId)
-        .set("authorization", `Bearer ${token}`)
+        .get("/users/" + testUser.id)
+        .set("authorization", `${TOKEN_TYPE}${testUser.token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a("object");
@@ -117,11 +129,13 @@ describe("User", () => {
 
   describe("PATCH /user/me", () => {
     it("should change user name", (done) => {
-      const user = { name: anotherName, about: anotherAbout };
+      testUser.name = "Vasya";
+      testUser.about = "I am a writer";
+      const user = { name: testUser.name, about: testUser.about };
       chai
         .request(server)
         .patch("/user/me")
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${testUser.token}`)
         .send(user)
         .end((err, res) => {
           res.should.have.status(200);
@@ -134,51 +148,58 @@ describe("User", () => {
   });
 
   describe("GET /user/me", () => {
-    it(`should check current user was changed to ${anotherName}`, (done) => {
+    it(`should check current user was changed to ${testUser.name}`, (done) => {
       chai
         .request(server)
         .get("/user/me/")
-        .set("authorization", `Bearer ${token}`)
+        .set("authorization", `${TOKEN_TYPE}${testUser.token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a("object");
           res.body.should.have.property("name");
-          res.body.name.should.be.eql(anotherName);
+          res.body.name.should.be.eql(testUser.name);
           res.body.should.have.property("about");
-          res.body.about.should.be.eql(anotherAbout);
+          res.body.about.should.be.eql(testUser.about);
           done();
         });
     });
   });
 
   describe("PATCH /user/me/avatar", () => {
-    it("should change user avatar", (done) => {
-      const user = { avatar: anotherAvatar };
+    it("It should test update avatar", (done) => {
       chai
         .request(server)
         .patch("/user/me/avatar")
-        .set("authorization", `Bearer ${token}`)
-        .send(user)
+        .set("authorization", `${TOKEN_TYPE}${testUser.token}`)
+        .attach("file", testAvatar.path)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a("object");
+          res.body.should.have.property("_id");
+          res.body.should.have.property("name");
           res.body.should.have.property("avatar");
+          res.body.should.have.property("about");
+          testUser.avatar = res.body.avatar;
           done();
         });
     });
   });
 
-  describe("GET /user/me", () => {
-    it(`should check current user avatar was changed to ${anotherAvatar}`, (done) => {
+  // Get hash of the test file
+  before((done) => {
+    fs.readFile(testAvatar.path, (err, buf) => {
+      testAvatar.hashSum = md5(buf);
+      done();
+    });
+  });
+
+  describe("GET avatar", () => {
+    it("It should check the avatar is correct", (done) => {
       chai
         .request(server)
-        .get("/user/me/")
-        .set("authorization", `Bearer ${token}`)
+        .get(`/${testUser.avatar}`)
         .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a("object");
-          res.body.should.have.property("avatar");
-          res.body.avatar.should.be.eql(anotherAvatar);
+          md5(res.body).should.be.eql(testAvatar.hashSum);
           done();
         });
     });
