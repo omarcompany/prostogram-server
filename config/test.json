@@ -1,4 +1,4 @@
 {
   "DBHost": "mongodb://localhost:27017/prostogramtestdb",
-  "STATIC_DIR_NAME": "test-static"
+  "ROOT_STATIC_DIR": "test-static"
 }

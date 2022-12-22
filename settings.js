@@ -1,8 +1,17 @@
 const path = require("path");
 const config = require("config");
 
-const { STATIC_DIR_NAME } = config;
+const { ROOT_STATIC_DIR } = config;
 
-const STATIC_PATH = path.join(__dirname, STATIC_DIR_NAME);
+const AVATAR_DIR = path.join(ROOT_STATIC_DIR, "avatar");
+const CARD_DIR = path.join(ROOT_STATIC_DIR, "card");
 
-module.exports = { STATIC_PATH };
+const AVATAR_STATIC_PATH = path.join(__dirname, AVATAR_DIR);
+const CARD_STATIC_PATH = path.join(__dirname, CARD_DIR);
+
+module.exports = {
+  AVATAR_DIR,
+  CARD_DIR,
+  AVATAR_STATIC_PATH,
+  CARD_STATIC_PATH,
+};

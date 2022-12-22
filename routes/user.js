@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const { celebrate, Joi } = require("celebrate");
 
-const { URL_REG_EXP } = require("../constants/constants");
 const {
   updateAvatar,
   updateUser,

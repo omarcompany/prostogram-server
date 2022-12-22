@@ -7,7 +7,7 @@ const cardSchema = new mongoose.Schema({
     minLength: 2,
     maxLengthL: 30,
   },
-  link: {
+  urn: {
     type: String,
     required: true,
   },
