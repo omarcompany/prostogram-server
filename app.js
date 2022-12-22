@@ -6,6 +6,7 @@ const fileUpload = require("express-fileupload");
 const fs = require("fs");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const path = require("path");
 
 const auth = require("./middlewares/auth");
 const authRouter = require("./routes/auth");
@@ -16,15 +17,26 @@ const { rolesInstance } = require("./controllers/roles");
 const user = require("./routes/user");
 const users = require("./routes/users");
 
-const { PORT = 3000, DBHost, STATIC_DIR_NAME } = config;
+const { PORT = 3000, DBHost } = config;
+const { AVATAR_STATIC_PATH, CARD_STATIC_PATH } = require("./settings");
 
-const initStaticPath = () => {
-  if (!fs.existsSync(STATIC_DIR_NAME)) {
-    fs.mkdirSync(STATIC_DIR_NAME);
+const directoryInstance = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
   }
 };
 
+const staticDirInstance = (dir) => {
+  directoryInstance(dir);
+  const route = `/${path.basename(dir)}`;
+  app.use(route, express.static(dir));
+};
+
 const app = express();
+
+[AVATAR_STATIC_PATH, CARD_STATIC_PATH].forEach((path) =>
+  staticDirInstance(path)
+);
 
 mongoose.connect(DBHost, (error) => {
   if (error) throw error.message;
@@ -32,13 +44,10 @@ mongoose.connect(DBHost, (error) => {
   console.log(`Connected to prostogram server ${DBHost}`);
 });
 
-initStaticPath();
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors);
 app.use(fileUpload({}));
-app.use(express.static(STATIC_DIR_NAME));
 
 app.use("/", authRouter);
 if (config.util.getEnv("NODE_ENV") !== "test") {

@@ -1,6 +1,6 @@
 process.env.NODE_ENV = "test";
 
-const { STATIC_PATH } = require("../settings");
+const { AVATAR_STATIC_PATH } = require("../settings");
 const { TOKEN_TYPE } = require("../constants/constants");
 const User = require("../models/user");
 
@@ -15,6 +15,7 @@ const should = chai.should();
 chai.use(chaiHttp);
 
 const testUser = {
+  name: "Fedya",
   email: "anothertestmail@gmail.com",
   password: "1234567890",
   about: "I am an engeneer",
@@ -31,10 +32,10 @@ const testAvatar = {
 
 describe("User", () => {
   before((done) => {
-    if (fs.existsSync(STATIC_PATH)) {
-      fs.rmSync(STATIC_PATH, { recursive: true, force: true });
+    if (fs.existsSync(AVATAR_STATIC_PATH)) {
+      fs.rmSync(AVATAR_STATIC_PATH, { recursive: true, force: true });
     }
-    fs.mkdirSync(STATIC_PATH);
+    fs.mkdirSync(AVATAR_STATIC_PATH);
 
     User.deleteMany({}, (error) => done());
   });
@@ -42,7 +43,7 @@ describe("User", () => {
   describe("POST /signup", () => {
     it("it should POST a user", (done) => {
       const user = {
-        name: "Fedya",
+        name: testUser.name,
         about: testUser.about,
         email: testUser.email,
         password: testUser.password,
