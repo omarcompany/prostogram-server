@@ -1,6 +1,7 @@
 const allowedCors = [
   "http://localhost:3001",
   "http://localhost:3000",
+  "https://prostogram.fvds.ru",
 ];
 
 const cors = (req, res, next) => {
