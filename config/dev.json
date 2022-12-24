@@ -1,5 +1,6 @@
 {
   "DBHost": "mongodb://127.0.0.1:27017/prostogramdb",
   "ROOT_STATIC_DIR": "static",
-  "SECRET_KEY": "some-secret-key"
+  "SECRET_KEY": "some-secret-key",
+  "PORT": "3011"
 }
