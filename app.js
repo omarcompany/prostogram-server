@@ -17,7 +17,7 @@ const { rolesInstance } = require("./controllers/roles");
 const user = require("./routes/user");
 const users = require("./routes/users");
 
-const { PORT = 3000, DBHost } = config;
+const { PORT = 3000, DBHost, ROOT_STATIC_DIR } = config;
 const { AVATAR_STATIC_PATH, CARD_STATIC_PATH } = require("./settings");
 
 const directoryInstance = (dir) => {
@@ -33,6 +33,8 @@ const staticDirInstance = (dir) => {
 };
 
 const app = express();
+
+directoryInstance(ROOT_STATIC_DIR);
 
 [AVATAR_STATIC_PATH, CARD_STATIC_PATH].forEach((path) =>
   staticDirInstance(path)
