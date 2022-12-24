@@ -1,4 +1,7 @@
-const SECRET_KEY = "some-secret-key";
+const config = require("config");
+
+const { SECRET_KEY } = config;
+
 const URL_REG_EXP =
   /^(https?:\/\/)(www\.)?([a-z1-9-]{2,}\.)+[a-z]{2,}\/?[a-z0-9-._~:/?#[\]@!$&'()*+,;=]*/i;
 
