@@ -1,26 +1,26 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const { isEmail } = require("validator");
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const { isEmail } = require('validator');
 
-const { HTTP_RESPONSE } = require("../constants/errors");
-const NotFoundError = require("../errors/not-found-error");
+const { HTTP_RESPONSE } = require('../constants/errors');
+const NotFoundError = require('../errors/not-found-error');
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
     minLength: 2,
     maxLengthL: 30,
-    default: "Oxxxymiron",
+    default: 'Oxxxymiron',
   },
   avatar: {
     type: String,
-    default: "",
+    default: '',
   },
   about: {
     type: String,
     minLength: 2,
     maxLengthL: 30,
-    default: "I am a musician",
+    default: 'I am a musician',
   },
   password: {
     type: String,
@@ -35,15 +35,22 @@ const userSchema = new mongoose.Schema({
       validator(value) {
         return isEmail(value);
       },
-      message: "Invalid email",
+      message: 'Invalid email',
     },
   },
-  roles: [{ type: String, ref: "role" }],
+  roles: [{ type: String, ref: 'role' }],
+  isActivated: {
+    type: Boolean,
+    default: false,
+  },
+  activationLink: {
+    type: String,
+  },
 });
 
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email })
-    .select("+password")
+    .select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(
@@ -60,4 +67,4 @@ userSchema.statics.findUserByCredentials = function (email, password) {
       });
     });
 };
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model('user', userSchema);
