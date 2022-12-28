@@ -1,5 +1,5 @@
 const Card = require("../models/card");
-const { CARD_STATIC_PATH } = require("../settings");
+const { CARD_STATIC_PATH } = require("../../settings");
 const { ERROR_TYPE, HTTP_RESPONSE } = require("../constants/errors");
 const ForbiddenError = require("../errors/forbidden-error");
 const NotFoundError = require("../errors/not-found-error");
@@ -13,7 +13,7 @@ module.exports.createCard = (req, res, next) => {
 
   const { name } = req.body;
 
-  const owner = req.user._id;
+  const owner = req.user.id;
   Card.create({
     name,
     urn: fileURN,
@@ -46,7 +46,7 @@ module.exports.remove = async (req, res, next) => {
     }
     const roles = req.user.roles;
     const isAdmin = roles.includes("ADMIN");
-    if (!isAdmin && !card.owner.equals(req.user._id)) {
+    if (!isAdmin && !card.owner.equals(req.user.id)) {
       next(new ForbiddenError());
       return;
     }
@@ -58,6 +58,7 @@ module.exports.remove = async (req, res, next) => {
     fs.unlinkSync(cardPath);
     res.send(removedCard);
   } catch (error) {
+    console.log(error)
     if (error.name === ERROR_TYPE.cast) {
       next(new BadRequestError());
       return;
@@ -69,7 +70,7 @@ module.exports.remove = async (req, res, next) => {
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.id,
-    { $addToSet: { likes: req.user._id } },
+    { $addToSet: { likes: req.user.id } },
     { new: true }
   )
     .then((card) => {
@@ -91,7 +92,7 @@ module.exports.likeCard = (req, res, next) => {
 module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.id,
-    { $pull: { likes: req.user._id } },
+    { $pull: { likes: req.user.id } },
     { new: true }
   )
     .then((card) => {

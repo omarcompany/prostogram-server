@@ -1,11 +1,16 @@
-const router = require("express").Router();
-const { celebrate, Joi } = require("celebrate");
+const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 
-const { createUser, login } = require("../controllers/users");
-const { URL_REG_EXP } = require("../constants/constants");
+const {
+  createUser,
+  login,
+  logout,
+  activateAccount,
+  refreshAccessToken,
+} = require('../controllers/users');
 
 router.post(
-  "/signup",
+  '/signup',
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
@@ -17,7 +22,7 @@ router.post(
   createUser
 );
 router.post(
-  "/signin",
+  '/signin',
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
@@ -26,5 +31,11 @@ router.post(
   }),
   login
 );
+
+router.post('/signout', logout);
+
+router.get('/activate/:link', activateAccount);
+
+router.get('/refresh', refreshAccessToken);
 
 module.exports = router;

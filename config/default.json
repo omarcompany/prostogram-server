@@ -1,6 +1,13 @@
 {
+  "PORT": "3010",
   "DBHost": "mongodb://127.0.0.1:27017/prostogramdb",
   "ROOT_STATIC_DIR": "static",
-  "SECRET_KEY": "some-secret-key",
-  "PORT": "3010"
+  "JWT_ACCESS_SECRET": "jwt-access-secret-key",
+  "JWT_REFRESH_SECRET": "jwt-refresh-secret-key",
+  "SMTP_HOST": "",
+  "SMTP_PORT": "",
+  "SMTP_USER": "",
+  "SMTP_PASSWORD": "",
+  "API_URL": "https://prostogram-server.fvds.ru",
+  "CLIENT_URL": "https://prostogram.fvds.ru"
 }
