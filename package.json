@@ -2,9 +2,9 @@
   "name": "prostogram-server",
   "version": "1.0.0",
   "description": "The backend of the Mesto project",
-  "main": "app.js",
+  "main": "./src/app.js",
   "scripts": {
-    "dev": "set \"NODE_ENV=dev\" && nodemon app.js",
+    "dev": "set \"NODE_ENV=dev\" && nodemon ./src/app.js",
     "test": "mocha --timeout 10000",
     "lint": "npx eslint ."
   },
