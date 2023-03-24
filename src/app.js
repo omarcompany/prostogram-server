@@ -41,11 +41,28 @@ directoryInstance(ROOT_STATIC_DIR);
   staticDirInstance(path)
 );
 
-mongoose.connect(DBHost, (error) => {
-  if (error) throw error.message;
+const connectToMongo = async () => {
+  try {
+    await mongoose.connect(DBHost, (error) => {
+      if (error) throw error.message;
 
-  console.log(`Connected to prostogram server ${DBHost}`);
-});
+      console.log(`Connected to prostogram server ${DBHost}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+connectToMongo();
+
+try {
+  mongoose.connect(DBHost, (error) => {
+    if (error) throw error.message;
+  
+    console.log(`Connected to prostogram server ${DBHost}`);
+  });
+} catch (error) {
+  console.log(error)
+}
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
